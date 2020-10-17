@@ -1,0 +1,14 @@
+Checks: '
+    -*,
+    modernize-*,
+    readability-*,
+    performance-*,
+    bugprone-*,
+    mpi-*,
+    clang-analyzer-*,
+    cppcoreguidelines-*,
+    -bugprone-macro-parentheses,
+    -readability-uppercase-literal-suffix,
+    -readability-magic-numbers,
+    -cppcoreguidelines-avoid-magic-numbers,
+'
