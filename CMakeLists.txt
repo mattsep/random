@@ -48,7 +48,6 @@ target_compile_features(${lib_target} INTERFACE cxx_std_17)
 # testing
 
 if(MATTSEP_RANDOM_BUILD_TESTS)
-    target_compile_definitions(${lib_target} INTERFACE MATTSEP_RANDOM_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 

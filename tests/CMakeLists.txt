@@ -6,6 +6,7 @@ CPMAddPackage(
 
 set(test_target ${PROJECT_NAME}-tests)
 add_executable(${test_target} main.cpp)
+target_compile_definitions(${test_target} PRIVATE MATTSEP_RANDOM_BUILD_TESTS)
 target_link_libraries(${test_target} PRIVATE ${lib_target} doctest)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
