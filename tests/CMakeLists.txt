@@ -5,11 +5,11 @@ CPMAddPackage(
 )
 
 set(test_target ${PROJECT_NAME}-tests)
+add_executable(${test_target} main.cpp)
+target_link_libraries(${test_target} PRIVATE ${lib_target} doctest)
 
-create_target(${test_target}-lib)
-target_compile_definitions(${test_target}-lib INTERFACE MSEP_RANDOM_BUILD_TESTS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    target_compile_options(${test_target}-lib INTERFACE
+    target_compile_options(${test_target} PRIVATE
         -Wall
         -Wextra
         -Werror
@@ -18,8 +18,5 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
         -pedantic-errors
     )
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    target_compile_options(${test_target}-lib INTERFACE /W4 /WX)
+    target_compile_options(${test_target} INTERFACE /W4 /WX)
 endif()
-
-add_executable(${test_target} main.cpp)
-target_link_libraries(${test_target} PRIVATE ${test_target}-lib doctest)
