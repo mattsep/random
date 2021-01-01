@@ -25,35 +25,26 @@
 #ifndef MATTSEP_RANDOM_TRAITS_HPP_INCLUDED
 #define MATTSEP_RANDOM_TRAITS_HPP_INCLUDED
 
+#include <bit>
+#include <limits>
 #include <type_traits>
 
-#include "mattsep/random/internal/bitops.hpp"
+#include "mattsep/random/concepts.hpp"
 
 namespace mattsep::random {
 
 namespace internal {
 
-  template <class G, class = void>
-  struct is_uniform_random_bit_generator_impl : std::false_type {};
-
-  template <class G>
-  struct is_uniform_random_bit_generator_impl<
-      G, std::void_t<std::enable_if_t<std::is_invocable_v<G&>>,
-                     std::enable_if_t<std::is_unsigned_v<std::invoke_result_t<G&>>>,
-                     std::enable_if_t<std::is_same_v<decltype(G::min()), std::invoke_result_t<G&>>>,
-                     std::enable_if_t<std::is_same_v<decltype(G::max()), std::invoke_result_t<G&>>>,
-                     std::enable_if_t<(G::max() > G::min())>>> : std::true_type {};
-
-  template <class G>
+  template <uniform_random_bit_generator G>
   static constexpr auto engine_entropy() -> int {
     using result_type = std::invoke_result_t<G&>;
     constexpr auto w = std::numeric_limits<result_type>::digits;
     constexpr auto r = G::max() - G::min() + 1;
-    constexpr auto n = (w - 1) - internal::countl_zero(r);
+    constexpr auto n = (w - 1) - std::countl_zero(r);
     return (n < 0) ? w : n;
   }
 
-  template <class G, class = std::enable_if_t<is_uniform_random_bit_generator_impl<G>::value>>
+  template <uniform_random_bit_generator G>
   struct engine_traits_impl {
     using result_type = std::invoke_result_t<G&>;
     static constexpr auto min = G::min();
@@ -64,19 +55,8 @@ namespace internal {
 
 }  // namespace internal
 
-template <class T>
-using is_uniform_random_bit_generator = internal::is_uniform_random_bit_generator_impl<T>;
-
-template <class T>
-constexpr auto is_uniform_random_bit_generator_v = is_uniform_random_bit_generator<T>::value;
-
 template <class G>
 using engine_traits = internal::engine_traits_impl<G>;
-
-#if __cplusplus > 201703L && defined(__cpp_concepts)
-template <class G>
-concept uniform_random_bit_generator = is_uniform_random_bit_generator_v<G>;
-#endif
 
 }  // namespace mattsep::random
 

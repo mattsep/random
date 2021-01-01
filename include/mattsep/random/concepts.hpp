@@ -22,12 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef MATTSEP_RANDOM_RANDOM_HPP_INCLUDED
-#define MATTSEP_RANDOM_RANDOM_HPP_INCLUDED
+#ifndef MATTSEP_RANDOM_CONCEPTS_HPP_INCLUDED
+#define MATTSEP_RANDOM_CONCEPTS_HPP_INCLUDED
 
-#include "mattsep/random/concepts.hpp"
-#include "mattsep/random/engines.hpp"
-#include "mattsep/random/rng.hpp"
-#include "mattsep/random/traits.hpp"
+#include <concepts>
 
-#endif  // MATTSEP_RANDOM_RANDOM_HPP_INCLUDED
+namespace mattsep::random {
+
+// clang-format off
+
+template <class G>
+concept uniform_random_bit_generator = requires {
+  std::invocable<G&>;
+  std::unsigned_integral<std::invoke_result_t<G&>>;
+  { G::min() } -> std::same_as<std::invoke_result_t<G&>>;
+  { G::max() } -> std::same_as<std::invoke_result_t<G&>>;
+  std::bool_constant<(G::max() > G::min())>::value;
+};
+
+// clang-format on
+
+}
+
+#endif

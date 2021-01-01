@@ -1,18 +1,18 @@
 /*
  * MIT License
- *
+ * 
  * Copyright (c) 2020 Matthew S. E. Peterson
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
  * of the Software, and to permit persons to whom the Software is furnished to do
  * so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,12 +22,14 @@
  * SOFTWARE.
  */
 
-#ifndef MATTSEP_RANDOM_RANDOM_HPP_INCLUDED
-#define MATTSEP_RANDOM_RANDOM_HPP_INCLUDED
+#ifndef MATTSEP_RANDOM_ENGINES_HPP_INCLUDED
+#define MATTSEP_RANDOM_ENGINES_HPP_INCLUDED
 
-#include "mattsep/random/concepts.hpp"
-#include "mattsep/random/engines.hpp"
-#include "mattsep/random/rng.hpp"
-#include "mattsep/random/traits.hpp"
+#include "mattsep/random/engines/jsf.hpp"
+#include "mattsep/random/engines/sfc.hpp"
 
-#endif  // MATTSEP_RANDOM_RANDOM_HPP_INCLUDED
+namespace mattsep::random {
+  using default_random_engine = engines::jsf64;
+}
+
+#endif

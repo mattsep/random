@@ -22,15 +22,6 @@ option(MATTSEP_RANDOM_BUILD_TESTS "Build the mattsep::random test executable" ${
 # -----------------------------------------------------------------------------
 # define target
 
-function(create_target target)
-    add_library(${target} INTERFACE)
-    target_include_directories(${target} ${ARGN} INTERFACE
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    )
-    target_compile_features(${target} INTERFACE cxx_std_17)
-endfunction()
-
 if(MATTSEP_RANDOM_IS_MAIN_PROJECT AND NOT TARGET ${package})
     set(lib_target ${package})
 else()
@@ -42,7 +33,7 @@ target_include_directories(${lib_target} ${ARGN} INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_compile_features(${lib_target} INTERFACE cxx_std_17)
+target_compile_features(${lib_target} INTERFACE cxx_std_20)
 
 # -----------------------------------------------------------------------------
 # testing

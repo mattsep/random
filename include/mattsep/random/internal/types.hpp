@@ -30,39 +30,41 @@
 
 namespace mattsep::random::internal {
 
-// TODO: Maybe implement a backup uint128_t in case we don't have access to one?
+using std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t;
+
+#if defined(__SIZEOF_INT128__)
+using uint128_t = __uint128_t;
+#else
+static_assert(false, "mattsep::random requires 128-bit integer support!");
+#endif
 
 template <int N>
 struct uint_least_bits {
   static_assert(N > 0);
   using type = std::conditional_t<
       /* if   */ (N <= 8),
-      /* then */ std::uint8_t,
+      /* then */ uint8_t,
       /* else */
       std::conditional_t<
           /* if   */ (N <= 16),
-          /* then */ std::uint16_t,
+          /* then */ uint16_t,
           /* else */
           std::conditional_t<
               /* if   */ (N <= 32),
-              /* then */ std::uint32_t,
+              /* then */ uint32_t,
               /* else */
               std::conditional_t<
                   /* if   */ (N <= 64),
-                  /* then */ std::uint64_t,
-#if defined(__SIZEOF_INT128__)
+                  /* then */ uint64_t,
                   /* else */
                   std::conditional_t<
                       /* if   */ (N <= 128),
-                      /* then */ __uint128_t,
-                      /* else */ void>
-#else
-                  /* else */ void
-#endif
-                  >  // N <= 8
-              >      // N <= 4
-          >          // N <= 2
-      >;             // N <= 1
+                      /* then */ uint128_t,
+                      /* else */ void>  // N <= 128
+                  >                     // N <= 64
+              >                         // N <= 32
+          >                             // N <= 16
+      >;                                // N <= 8
 };
 
 template <int N>

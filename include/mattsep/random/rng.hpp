@@ -25,34 +25,17 @@
 #ifndef MATTSEP_RANDOM_RNG_HPP_INCLUDED
 #define MATTSEP_RANDOM_RNG_HPP_INCLUDED
 
+#include <concepts>
 #include <limits>
 
-#include "mattsep/random/engines/jsf.hpp"
-#include "mattsep/random/engines/sfc.hpp"
-#include "mattsep/random/internal/bitops.hpp"
-#include "mattsep/random/internal/types.hpp"
-#include "mattsep/random/type_traits.hpp"
+#include "mattsep/random/engines.hpp"
+#include "mattsep/random/internal.hpp"
+#include "mattsep/random/traits.hpp"
 
 namespace mattsep::random {
 
-using default_random_engine = engines::jsf64;
-
-template <class Engine = default_random_engine>
+template <uniform_random_bit_generator Engine = default_random_engine>
 class rng {
-  static_assert(is_uniform_random_bit_generator_v<Engine>);
-
-  template <class T>
-  using require_unsigned = std::enable_if_t<std::is_unsigned_v<T>>;
-
-  template <class T>
-  using require_integral = std::enable_if_t<std::is_integral_v<T>>;
-
-  template <class T>
-  using require_floating = std::enable_if_t<std::is_floating_point_v<T>>;
-
-  template <class T>
-  using require_arithmetic = std::enable_if_t<std::is_floating_point_v<T> || std::is_integral_v<T>>;
-
 public:
   using engine_type = Engine;
   using result_type = std::invoke_result_t<Engine&>;
@@ -60,12 +43,12 @@ public:
   rng() = default;
   rng(result_type s) : engine_{s} {}
 
-  template <class Out = double, class = require_arithmetic<Out>>
+  template <class Out = double>
   auto random() -> Out {
-    if constexpr (std::is_integral_v<Out>) {
+    if constexpr (std::integral<Out>) {
       return static_cast<Out>(next<std::numeric_limits<Out>::digits>());
     }
-    if constexpr (std::is_floating_point_v<Out>) { return generate_canonical<Out>(); }
+    if constexpr (std::floating_point<Out>) { return generate_canonical<Out>(); }
   }
 
 private:
@@ -106,7 +89,7 @@ private:
    * @tparam Real A floating-point type
    * @return Real
    */
-  template <class Real, class = require_floating<Real>>
+  template <std::floating_point Real>
   auto generate_canonical() -> Real {
     constexpr auto mantissa_bits = std::numeric_limits<Real>::digits;
     constexpr auto multiplier = std::numeric_limits<Real>::epsilon() / 2;
@@ -126,7 +109,7 @@ private:
    *
    * @param max The upper bound on the generated range.
    */
-  template <class UInt, class = require_unsigned<UInt>>
+  template <std::unsigned_integral UInt>
   auto lemire_bounded(UInt max) -> UInt {
     constexpr auto bits = std::numeric_limits<UInt>::digits;
 

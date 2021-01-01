@@ -25,19 +25,17 @@
 #ifndef MATTSEP_RANDOM_ENGINES_SFC_HPP_INCLUDED
 #define MATTSEP_RANDOM_ENGINES_SFC_HPP_INCLUDED
 
+#include <bit>
+#include <concepts>
 #include <cstdint>
-#include <type_traits>
-
-#include "mattsep/random/internal/bitops.hpp"
+#include <limits>
 
 namespace mattsep::random::engines {
 
-template <class UIntType, UIntType P, UIntType Q, UIntType R>
+template <std::unsigned_integral ResultType, int P, int Q, int R>
 class sfc {
-  static_assert(std::is_unsigned_v<UIntType>);
-
 public:
-  using result_type = UIntType;
+  using result_type = ResultType;
 
   static constexpr auto default_seed = static_cast<result_type>(0x5FC5EED);
 
@@ -56,32 +54,26 @@ public:
     e_ = a_ + b_ + d_++;
     a_ = b_ ^ (b_ >> P);
     b_ = c_ + (c_ << Q);
-    c_ = e_ + internal::rotl(c_, R);
+    c_ = e_ + std::rotl(c_, R);
     return e_;
-  }
-
-  auto operator()() noexcept -> result_type {
-    return next();
-  }
-
-  auto operator==(sfc const& rhs) const noexcept -> bool {
-    return a_ == rhs.a_ && b_ == rhs.b_ && c_ == rhs.c_ && d_ == rhs.d_;
-  }
-
-  auto operator!=(sfc const& rhs) const noexcept -> bool {
-    return !(*this == rhs);
   }
 
   auto discard(unsigned long long n) noexcept -> void {
     while (n-- != 0) { next(); }
   }
 
+  auto operator()() noexcept -> result_type {
+    return next();
+  }
+
+  auto operator==(sfc const& rhs) const noexcept -> bool = default;
+
   static constexpr auto min() -> result_type {
-    return result_type{0};
+    return std::numeric_limits<result_type>::min();
   }
 
   static constexpr auto max() -> result_type {
-    return result_type{0} - 1;
+    return std::numeric_limits<result_type>::max();
   }
 
 private:

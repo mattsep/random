@@ -25,19 +25,17 @@
 #ifndef MATTSEP_RANDOM_ENGINES_JSF_HPP_INCLUDED
 #define MATTSEP_RANDOM_ENGINES_JSF_HPP_INCLUDED
 
+#include <bit>
+#include <concepts>
 #include <cstdint>
-#include <type_traits>
-
-#include "mattsep/random/internal/bitops.hpp"
+#include <limits>
 
 namespace mattsep::random::engines {
 
-template <class UIntType, UIntType P, UIntType Q, UIntType R>
+template <std::unsigned_integral ResultType, int P, int Q, int R>
 class jsf {
-  static_assert(std::is_unsigned_v<UIntType>);
-
 public:
-  using result_type = UIntType;
+  using result_type = ResultType;
 
   static constexpr auto default_seed = static_cast<result_type>(0x8085EED);
 
@@ -51,38 +49,32 @@ public:
     discard(20);
   }
 
-  auto discard(unsigned long long n) noexcept -> void {
-    while (n-- != 0) { next(); }
-  }
-
   auto next() noexcept -> result_type {
     result_type e_;
-    e_ = a_ - internal::rotl(b_, P);
-    a_ = b_ ^ internal::rotl(c_, Q);
-    b_ = c_ + internal::rotl(d_, R);
+    e_ = a_ - std::rotl(b_, P);
+    a_ = b_ ^ std::rotl(c_, Q);
+    b_ = c_ + std::rotl(d_, R);
     c_ = d_ + e_;
     d_ = e_ + a_;
     return d_;
+  }
+
+  auto discard(unsigned long long n) noexcept -> void {
+    while (n-- != 0) { next(); }
   }
 
   auto operator()() noexcept -> result_type {
     return next();
   }
 
-  auto operator==(jsf const& rhs) const noexcept -> bool {
-    return a_ == rhs.a_ && b_ == rhs.b_ && c_ == rhs.c_ && d_ == rhs.d_;
-  }
-
-  auto operator!=(jsf const& rhs) const noexcept -> bool {
-    return !(*this == rhs);
-  }
+  auto operator==(jsf const& rhs) const noexcept -> bool = default;
 
   static constexpr auto min() -> result_type {
-    return result_type{0};
+    return std::numeric_limits<result_type>::min();
   }
 
   static constexpr auto max() -> result_type {
-    return result_type{0} - 1;
+    return std::numeric_limits<result_type>::max();
   }
 
 private:
