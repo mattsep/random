@@ -5,8 +5,15 @@ CPMAddPackage(
 )
 
 set(test_target ${PROJECT_NAME}-tests)
-add_executable(${test_target} main.cpp)
-target_compile_definitions(${test_target} PRIVATE MATTSEP_RANDOM_BUILD_TESTS)
+set(test_souces
+    main.cpp
+    engines/jsf_test.cpp
+    engines/sfc_test.cpp
+    rng_test.cpp
+)
+
+add_executable(${test_target} ${test_souces})
+set_target_properties(${test_target} PROPERTIES CXX_EXTENSIONS OFF)
 target_link_libraries(${test_target} PRIVATE ${lib_target} doctest)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
