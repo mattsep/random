@@ -83,13 +83,13 @@ IncludeBlocks: Regroup
 IncludeCategories:
     - Regex: '^<ext/.*\.h>' # ?
       Priority: 1
-    - Regex: '^<.*\.h>'     # C system headers
+    - Regex: '^<.*\.h>'      # C system headers
       Priority: 2
-    - Regex: '^<.*>'        # C++ standard library headers
+    - Regex: '^<.*>'         # C++ standard library headers
       Priority: 3
-    - Regex: '^"mtl/.*"'    # project headers
+    - Regex: '^"mattsep/.*"' # project headers
       Priority: 5
-    - Regex: '^".*"'        # all other headers (external dependencies, etc)
+    - Regex: '^".*"'         # all other headers (external dependencies, etc)
       Priority: 4
 IncludeIsMainRegex: '([-_](test|bench|impl))?$'
 
