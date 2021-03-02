@@ -26,8 +26,8 @@
 #define MATTSEP_RANDOM_RANDOM_HPP_INCLUDED
 
 #include "mattsep/random/concepts.hpp"
+#include "mattsep/random/distributions.hpp"
 #include "mattsep/random/engines.hpp"
 #include "mattsep/random/rng.hpp"
-#include "mattsep/random/traits.hpp"
 
 #endif  // MATTSEP_RANDOM_RANDOM_HPP_INCLUDED

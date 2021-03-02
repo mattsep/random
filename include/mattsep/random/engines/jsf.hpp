@@ -37,14 +37,14 @@ class jsf {
 public:
   using result_type = ResultType;
 
-  static constexpr auto default_seed = static_cast<result_type>(0x8085EED);
+  static constexpr result_type default_seed = 0x8085EEDull;
 
   jsf(result_type s = default_seed) noexcept {
     seed(s);
   }
 
   auto seed(result_type s) noexcept -> void {
-    a_ = static_cast<result_type>(0xF1EA5EEDull);
+    a_ = magic;
     b_ = c_ = d_ = s;
     discard(20);
   }
@@ -78,6 +78,7 @@ public:
   }
 
 private:
+  static constexpr result_type magic = 0xF1EA5EEDull;
   result_type a_, b_, c_, d_;
 };
 

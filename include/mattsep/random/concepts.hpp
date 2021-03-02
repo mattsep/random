@@ -26,6 +26,7 @@
 #define MATTSEP_RANDOM_CONCEPTS_HPP_INCLUDED
 
 #include <concepts>
+#include <type_traits>
 
 namespace mattsep::random {
 
@@ -40,8 +41,69 @@ concept uniform_random_bit_generator = requires {
   std::bool_constant<(G::max() > G::min())>::value;
 };
 
+namespace internal {
+  struct uniform_random_bit_generator_archetype {
+    using result_type = unsigned int;
+    auto operator()() -> result_type;
+    static constexpr auto min() -> result_type { return 0; }
+    static constexpr auto max() -> result_type { return 1; }
+  };
+
+  struct random_number_distribution_archetype {
+    struct param_type {};
+
+    auto min() -> int;
+    auto max() -> int;
+
+    [[nodiscard]] auto param() const -> param_type;
+    auto param(param_type p) -> void;
+
+    template <uniform_random_bit_generator G>
+    auto operator()(G& g) -> int;
+    
+    template <uniform_random_bit_generator G>
+    auto operator()(G& g, param_type p) -> int;
+  };
+
+  template <class T>
+  concept not_void = !std::is_same_v<T, void>;
+
+  template <class P>
+  concept distribution_parameter = requires {
+    std::copy_constructible<P>;
+    std::equality_comparable<P>;
+    std::is_copy_assignable_v<P>;
+  };
+
+  template <class Dist, class Result, class Param, class Gen>
+  concept random_number_distribution_impl = requires(Dist& d, Dist const& x, Param p, Gen& g) {
+    distribution_parameter<Param>;
+    std::is_constructible_v<Dist, Param>;
+    { d(g) } -> std::same_as<Result>;
+    { d(g, p) } -> std::same_as<Result>;
+    { x.min() } -> std::same_as<Result>;
+    { x.max() } -> std::same_as<Result>;
+    { d.param() } -> std::same_as<Param>;
+    { d.param(p) };
+  };
+
+}  // namespace internal
+
+template <class D>
+concept random_number_distribution = requires(D d, internal::uniform_random_bit_generator_archetype& g) {
+  std::copy_constructible<D>;
+  std::is_copy_assignable_v<D>;
+  std::is_default_constructible_v<D>;
+  std::invocable<D&, decltype(g)>;
+  { d.param() } -> internal::not_void;
+  internal::random_number_distribution_impl<D, decltype(std::declval<D&>()(g)), decltype(d.param()), decltype(g)>;
+};
+
 // clang-format on
 
-}
+static_assert(uniform_random_bit_generator<internal::uniform_random_bit_generator_archetype>);
+static_assert(random_number_distribution<internal::random_number_distribution_archetype>);
+
+}  // namespace mattsep::random
 
 #endif
